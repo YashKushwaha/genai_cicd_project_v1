@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: fastapi-ecr-repo-20250721
+  ECR_REPOSITORY: fastapi-ecr-repo-20250718
 
 jobs:
   build-and-push:
