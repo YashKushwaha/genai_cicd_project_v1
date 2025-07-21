@@ -17,3 +17,6 @@ with open(github_env, 'a') as env_file:
             _ = f'{section}_{key}'.upper()
             env_file.write(f"{_}={val}\n")
 
+print(f"Wrote to {github_env}:")
+with open(github_env) as f:
+    print(f.read())

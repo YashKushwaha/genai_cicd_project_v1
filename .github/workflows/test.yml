@@ -23,3 +23,6 @@ jobs:
         run: |
           echo "VPC_NAME: $VPC_NAME"
           echo "ECR_REPO_NAME: $ECR_REPO_NAME"
+
+      - name: print the env
+        run: env
