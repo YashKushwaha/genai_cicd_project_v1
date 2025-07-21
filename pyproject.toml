@@ -1,0 +1,21 @@
+[project]
+name = "genai-cdcd-project-v1"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Yash Kushwaha",email = "37941798+YashKushwaha@users.noreply.github.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "uvicorn (>=0.34.3,<0.35.0)",
+    "fastapi (>=0.115.13,<0.116.0)",
+    "jinja2 (>=3.1.6,<4.0.0)",
+    "python-multipart (>=0.0.20,<0.0.21)",
+]
+[tool.poetry]
+package-mode = false
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
