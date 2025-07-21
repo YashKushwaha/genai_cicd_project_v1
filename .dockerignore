@@ -1,0 +1,13 @@
+# Ignore virtual environments, git, and test directories
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+.git/
+.gitignore
+.dockerignore
+node_modules/
+tests/
+*.log
