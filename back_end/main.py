@@ -9,6 +9,9 @@ from pathlib import Path
 from back_end.config_settings import STATIC_DIR, IMAGES_DIR
 from back_end.routes import ui_routes, debug_routes, api_routes
 
+from src.llm import get_bedrock_llm
+llm = get_bedrock_llm()
+
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
@@ -17,6 +20,8 @@ app.mount("/images", StaticFiles(directory=IMAGES_DIR), name="images")
 app.include_router(ui_routes.router)
 app.include_router(debug_routes.router)
 app.include_router(api_routes.router)
+
+app.state.llm = llm 
 
 if __name__ == "__main__":
     import uvicorn

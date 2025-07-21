@@ -14,6 +14,12 @@ def root(request: Request):
         "chat_endpoint": "/echo"
     })
 
+@router.get("/chat", response_class=HTMLResponse)
+def root(request: Request):
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "chat_endpoint": "/chat"
+    })
 
 @router.get("/echo", response_class=HTMLResponse)
 def root(request: Request):
