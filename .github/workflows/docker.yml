@@ -16,6 +16,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set env vars from config.ini using Python
+        run: python3 configs/load_config.py
+
+      - name: Use the environment variables
+        run: |
+          echo "VPC_NAME: $VPC_NAME"
+          echo "ECR_REPO_NAME: $ECR_REPO_NAME"
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
