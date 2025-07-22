@@ -112,9 +112,13 @@ github_env = os.environ.get('GITHUB_ENV', 'GITHUB_ENV.txt')
 print('github_env -> ', github_env)
 
 with open(github_env, 'a') as env_file:
-    for i,j in result.items():
+    for i, j in result.items():
         key = f'TF_VAR_{i}'
-        env_file.write(f"{key}={j}\n")
+        if isinstance(j, list):
+            value = json.dumps(j)  # ensures JSON-compatible string: ["value"]
+        else:
+            value = str(j)
+        env_file.write(f"{key}={value}\n")
 
 print(f"Wrote to {github_env}:")
 with open(github_env) as f:
