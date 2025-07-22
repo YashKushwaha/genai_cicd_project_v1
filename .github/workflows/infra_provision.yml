@@ -35,12 +35,14 @@ jobs:
         if: steps.check_resources.outputs.ec2_import_required == 'true'
         run: |
           terraform import aws_instance.web "${{steps.check_resources.outputs.instance_id }}"
-      
+        working-directory: ./terraform
+
       - name: Check if ECR repo needs to be imported
         if: steps.check_resources.outputs.ecr_import_required == 'true'
         run: |
           terraform import aws_instance.web "${{steps.check_resources.outputs.repo_name}}"
-
+        working-directory: ./terraform
+        
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ./terraform
