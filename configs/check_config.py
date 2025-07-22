@@ -95,7 +95,7 @@ iam_instance_profile = iam_manager.find_instance_profile_for_role(profile_name)
 ############################################
 
 result = dict(vpc_id=vpc_id, subnet_id=subnet_id, ami_id=ami_id,
-                vpc_security_group_ids = [sg_id],
+                security_group_ids = [sg_id],
                 key_name=key_name, iam_instance_profile=iam_instance_profile, 
                 repo_name=repo_name, instance_name=instance_name, instance_type=instance_type)
 
