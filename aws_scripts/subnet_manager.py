@@ -1,5 +1,5 @@
 import ipaddress
-from vpc_manager import VpcManager
+from .vpc_manager import VpcManager
 
 class SubnetManager:
     def __init__(self, ec2_client):
@@ -15,7 +15,7 @@ class SubnetManager:
             filters.append({"Name": "vpc-id", "Values": [vpc_id]})
         response = self.ec2_client.describe_subnets(Filters=filters)
         if response["Subnets"]:
-            return response["Subnets"][0]
+            return response["Subnets"][0]['SubnetId']
         return None
 
     def _generate_available_subnet_cidr(self, vpc_cidr, used_cidrs, new_prefix=24):

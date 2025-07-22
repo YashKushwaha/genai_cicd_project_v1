@@ -1,7 +1,8 @@
-
-
 from llama_index.llms.bedrock_converse import BedrockConverse
 import botocore.session
+
+import os
+os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'
 
 def get_bedrock_llm():
     botocore_session = botocore.session.get_session()

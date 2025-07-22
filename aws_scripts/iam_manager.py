@@ -113,13 +113,30 @@ class IAMmanager:
 
         return profile_name
 
+    def get_or_create_custom_project_role(self, role_name="ec2_project_role", profile_name="ec2_project_profile"):
+        if not self.role_exists(role_name):
+            self.create_role_for_ec2(role_name)
+
+        # Attach managed ECR policy
+        self.attach_managed_policy(
+            role_name,
+            "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+        )
+
+        # Attach Bedrock inline policy
+        self.attach_bedrock_inline_policy(role_name)
+
+        if not self.instance_profile_exists(profile_name):
+            self.create_instance_profile(profile_name)
+
+        self.add_role_to_instance_profile(role_name, profile_name)
+
+        return profile_name
+
 
 if __name__ == '__main__':
     iam_client = boto3.client("iam")
     iam_mgr = IAMmanager(iam_client)
 
-    ecr_profile = iam_mgr.get_or_create_ecr_instance_profile()
-    print(f"Use ECR instance profile: {ecr_profile}")
-
-    bedrock_profile = iam_mgr.get_or_create_bedrock_instance_profile()
-    print(f"Use Bedrock instance profile: {bedrock_profile}")
+    unified_profile = iam_mgr.get_or_create_custom_project_role()
+    print(f"Use unified instance profile: {unified_profile}")

@@ -56,12 +56,14 @@ class SecurityGroupManager:
             tags=tags
         )
 
-    def get_ingress_rule_on_port(self, port, cidr="0.0.0.0/0", protocol="tcp"):
+    def get_ingress_rule_on_port(self, port, cidr="0.0.0.0/0", protocol="tcp", description=None):
         return [{
             "IpProtocol": protocol,
             "FromPort": port,
             "ToPort": port,
-            "IpRanges": [{"CidrIp": cidr}]
+            "IpRanges": [{"CidrIp": cidr, 
+                          "Description": description or f"Port {port}"
+           }]
         }]
     
     def add_ingress_rule_to_group(self, sg_id, ingress_rule):
@@ -70,3 +72,33 @@ class SecurityGroupManager:
                 IpPermissions=ingress_rule
             )
         return response
+    
+    def add_ingress_rules_from_dict_to_group(self, sg_id, ports_mapping):
+        existing_ports = self.get_existing_ingress_ports(sg_id)
+        rules = []
+        for name, port in ports_mapping.items():
+            if port in existing_ports:
+                continue
+            rule = self.get_ingress_rule_on_port(int(port), description = name)
+            rules.extend(rule)
+        if rules:
+            response = self.ec2_client.authorize_security_group_ingress(
+                GroupId=sg_id,
+                IpPermissions=rules
+            )
+        else:
+            response=True
+        return response
+        
+    def get_security_group_rules(self, group_id):
+        response = self.ec2_client.describe_security_groups(GroupIds=[group_id])
+        sg = response['SecurityGroups'][0]
+
+        ingress_rules = sg.get('IpPermissions', [])
+        egress_rules = sg.get('IpPermissionsEgress', [])
+        return ingress_rules, egress_rules
+
+    def get_existing_ingress_ports(self, group_id):
+        ingress_rules, _ = self.get_security_group_rules(group_id)
+        ports = [i.get('FromPort') for i in ingress_rules]
+        return ports
