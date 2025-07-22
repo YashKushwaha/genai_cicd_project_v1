@@ -1,4 +1,4 @@
-name: Dummy Run
+name: Script to create Infra for running the DOcker Image
 
 on:
   workflow_dispatch:
@@ -18,6 +18,7 @@ jobs:
       - name: Check the config provided in infra_config.ini
         id: check_resources
         run: python3 configs/check_config.py
+        working-directory: .
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
