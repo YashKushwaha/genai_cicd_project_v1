@@ -19,13 +19,9 @@ ec2_client = session.client('ec2')
 ec2_manager = EC2Manager(ec2_client)
 ec2_name = dict(config.items('ec2')).get('instance_name')
 
-instance_exists = ec2_manager.find_instance_by_name(ec2_name)
+instance = ec2_manager.find_instance_by_name(ec2_name)
 
-print('instance_exists -> ', instance_exists)
-
-
-sys.exit('Done')
-
+instance_id = instance['InstanceId'] if instance else None
 ###################################
 vpc_manager = VpcManager(ec2_client)
 vpc_name = dict(config.items('vpc')).get('name')
@@ -49,6 +45,7 @@ if ami_id is None:
 
 if not ami_manager.validate_ami(ami_id):
     sys.exit(f'No ami found with the id -> {ami_id}')
+
 ###################################
 sg_manager = SecurityGroupManager(ec2_client)
 security_group_name = dict(config.items('security_group')).get('security_group_name')
@@ -69,11 +66,15 @@ key_name = dict(config.items('key-pair')).get('name')
 key_exists = key_pair_manager.key_pair_exists(key_name)
 if not key_exists:
     sys.exit(f'No key found with the name -> {key_name}')
+
+
 ############################################
 ecr_manager = ECRManager(ecr_client = session.client('ecr'))
 repo_name = dict(config.items('ecr')).get('repo_name')
 repo_exists = ecr_manager.repo_exists(repo_name)
-if not repo_exists:
+print('repo_exists -> ', repo_exists)
+
+if (not repo_exists) and not dict(config.items('ecr')).get('create_new'):
     sys.exit(f'No ECR repo with name -> {repo_name}')
 ############################################
 iam_manager = IAMmanager(session.client('iam'))
@@ -82,4 +83,31 @@ print(profile_name)
 role_exists = iam_manager.role_exists(profile_name)
 if not role_exists:
     sys.exit(f"Specified IAM role doesn't exist -> {profile_name}")
+
+iam_instance_profile = iam_manager.find_instance_profile_for_role(profile_name)
 ############################################
+
+result = dict(vpc_id=vpc_id, subnet_id=subnet_id, ami_id=ami_id,
+                vpc_security_group_ids = [sg_id],
+                key_name=key_name, iam_instance_profile=iam_instance_profile, repo_name=repo_name)
+
+with open(os.environ.get('GITHUB_OUTPUT', 'GITHUB_OUTPUT.txt'), 'a') as env_file:
+    if instance_id is not None:
+        env_file.write("ec2_import_required=true\n")
+        env_file.write(f"instance_id={instance_id}\n")
+        #env_file.write(f"iam_instance_profile={iam_instance_profile}\n")
+    if repo_exists:
+        env_file.write("ecr_import_required=true\n")
+        env_file.write(f"repo_name={repo_name}\n")
+# Write to GitHub environment file
+github_env = os.environ.get('GITHUB_ENV', 'GITHUB_ENV.txt')
+print('github_env -> ', github_env)
+
+with open(github_env, 'a') as env_file:
+    for i,j in result.items():
+        key = f'TF_VAR_{i}'
+        env_file.write(f"{key}={j}\n")
+
+print(f"Wrote to {github_env}:")
+with open(github_env) as f:
+    print(f.read())

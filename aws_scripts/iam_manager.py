@@ -14,6 +14,15 @@ class IAMmanager:
         except self.iam_client.exceptions.NoSuchEntityException:
             return False
 
+    def find_instance_profile_for_role(self, role_name):
+        paginator = self.iam_client.get_paginator('list_instance_profiles')
+        for page in paginator.paginate():
+            for profile in page['InstanceProfiles']:
+                for role in profile['Roles']:
+                    if role['RoleName'] == role_name:
+                        return profile['InstanceProfileName']
+        return None
+
     def create_role_for_ec2(self, role_name, description="EC2 access role"):
         trust_policy = {
             "Version": "2012-10-17",

@@ -1,0 +1,41 @@
+name: Dummy Run
+
+on:
+  workflow_dispatch:
+  #push:
+  #  branches: [main]
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check the config provided in infra_config.ini
+        id: check_resources
+        run: python3 configs/check_config.py
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform
+
+      - name: Check if ec2 instance needs to be imported
+        if: steps.check_resources.outputs.ec2_import_required == 'true'
+        run: |
+          terraform import aws_instance.web "${{steps.check_resources.outputs.instance_id }}"
+      
+      - name: Check if ECR repo needs to be imported
+        if: steps.check_resources.outputs.ecr_import_required == 'true'
+        run: |
+          terraform import aws_instance.web "${{steps.check_resources.outputs.repo_name}}"
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: ./terraform
