@@ -27,6 +27,8 @@ ec2_name = dict(config.items('ec2')).get('instance_name')
 instance = ec2_manager.find_instance_by_name(ec2_name)
 
 instance_id = instance['InstanceId'] if instance else None
+instance_name=dict(config.items('ec2')).get('instance_name')
+instance_type=dict(config.items('ec2')).get('instance_type')
 ###################################
 vpc_manager = VpcManager(ec2_client)
 vpc_name = dict(config.items('vpc')).get('name')
@@ -94,7 +96,8 @@ iam_instance_profile = iam_manager.find_instance_profile_for_role(profile_name)
 
 result = dict(vpc_id=vpc_id, subnet_id=subnet_id, ami_id=ami_id,
                 vpc_security_group_ids = [sg_id],
-                key_name=key_name, iam_instance_profile=iam_instance_profile, repo_name=repo_name)
+                key_name=key_name, iam_instance_profile=iam_instance_profile, 
+                repo_name=repo_name, instance_name=instance_name, instance_type=instance_type)
 
 with open(os.environ.get('GITHUB_OUTPUT', 'GITHUB_OUTPUT.txt'), 'a') as env_file:
     if instance_id is not None:
