@@ -9,8 +9,15 @@ resource "aws_instance" "web" {
   subnet_id              = var.subnet_id
   vpc_security_group_ids = var.security_group_ids
   associate_public_ip_address = true
+
+  user_data = <<-EOF
+                #!/bin/bash
+                usermod -aG docker ec2-user
+                shutdown -h now
+                EOF
+
   tags = {
-    Name = "personal-ec2"
+    Name = var.instance_name
   }
 }
 
@@ -25,6 +32,6 @@ resource "aws_ecr_repository" "genai_repo" {
 
   tags = {
     Name        = var.repo_name
-    
+
   }
 }

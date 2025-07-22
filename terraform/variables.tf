@@ -12,6 +12,10 @@ variable "instance_type" {
   default = "t3.micro"
 }
 
+variable "instance_name" {
+  type = string
+}
+
 variable "key_name" {
   type = string
 }
@@ -27,3 +31,5 @@ variable "security_group_ids" {
 variable "repo_name" {
   type = string
 }
+
+
