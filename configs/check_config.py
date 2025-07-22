@@ -1,9 +1,14 @@
+import os
+
+print(os.getcwd())
+print(os.listdir())
+
 from aws_scripts import (AMImanager,
            IAMmanager, KeyPairManager, SecurityGroupManager,
             SubnetManager, VpcManager, ECRManager, EC2Manager)
 
 import configparser
-import os
+
 import boto3
 import sys
 import json
