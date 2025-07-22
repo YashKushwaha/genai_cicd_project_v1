@@ -40,9 +40,9 @@ jobs:
       - name: Check if ECR repo needs to be imported
         if: steps.check_resources.outputs.ecr_import_required == 'true'
         run: |
-          terraform import aws_instance.web "${{steps.check_resources.outputs.repo_name}}"
+          terraform import aws_ecr_repository.genai_repo "${{steps.check_resources.outputs.repo_name}}"
         working-directory: ./terraform
-        
+
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ./terraform
