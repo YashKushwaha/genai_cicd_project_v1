@@ -17,7 +17,10 @@ jobs:
 
       - name: Check the config provided in infra_config.ini
         id: check_resources
-        run: python3 configs/check_config.py
+        
+        run: |
+          export PYTHONPATH="${{ github.workspace }}"
+          python3 configs/check_config.py
         working-directory: .
 
       - name: Set up Terraform
