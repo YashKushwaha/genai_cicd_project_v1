@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: genai-cicd-project-ecr-repo
+
 
 jobs:
   build-and-push:
