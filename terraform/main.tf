@@ -14,15 +14,8 @@ resource "aws_instance" "web" {
     ignore_changes = [ associate_public_ip_address ]
   }
 
-  user_data = <<-EOF
-                #!/bin/bash
-                usermod -aG docker ec2-user
-                sudo yum install codedeploy-agent -y   # Amazon Linux
-                sudo systemctl start codedeploy-agent
-                sudo systemctl enable codedeploy-agent
-                shutdown -h now
-                EOF
-
+  user_data = file("${path.module}/init.sh")
+  
   tags = {
     Name = var.instance_name
   }
