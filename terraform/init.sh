@@ -1,21 +1,21 @@
 #!/bin/bash
-# Update system packages
-sudo yum update -y
+set -euxo pipefail
 
 # Install Docker
-sudo amazon-linux-extras install docker -y
-sudo systemctl start docker
-sudo systemctl enable docker
-sudo usermod -aG docker ec2-user
+yum update -y
+yum install -y docker
+systemctl start docker
+systemctl enable docker
+usermod -aG docker ec2-user
 
-# Install CodeDeploy agent
-sudo yum install ruby wget -y
+# Install CodeDeploy
+yum install -y ruby wget
 cd /home/ec2-user
 wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install
 chmod +x ./install
-sudo ./install auto
-sudo systemctl start codedeploy-agent
-sudo systemctl enable codedeploy-agent
+./install auto
+systemctl start codedeploy-agent
+systemctl enable codedeploy-agent
 
-# Optional shutdown after provisioning
+# Shutdown only after success
 shutdown -h now
