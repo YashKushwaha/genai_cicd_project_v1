@@ -23,5 +23,6 @@ async def chat(request: Request, message: str = Form(...), image: UploadFile = F
 
 @router.post("/chat_bot")
 async def chat_bot(request: Request, message: str = Form(...), image: UploadFile = File(None)):
-    response_stream = stream_llm_response(request.app.state.chat_engine, message)
-    return StreamingResponse(response_stream, media_type="text/plain")
+    chat_engine = request.app.state.chat_engine
+    response = chat_engine.stream_chat(message=message)
+    return StreamingResponse(response.response_gen, media_type="text/plain")
