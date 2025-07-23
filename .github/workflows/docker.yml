@@ -37,6 +37,6 @@ jobs:
 
       - name: Build, tag, and push image to ECR
         run: |
-          IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest"
+          IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO_NAME }}:latest"
           docker build -t $IMAGE_URI .
           docker push $IMAGE_URI
