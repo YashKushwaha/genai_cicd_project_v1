@@ -17,6 +17,11 @@ async def stream_response(response):
         await asyncio.sleep(0.1)
 
 @router.post("/chat")
-async def chat_bot(request: Request, message: str = Form(...), image: UploadFile = File(None)):
+async def chat(request: Request, message: str = Form(...), image: UploadFile = File(None)):
     response_stream = stream_llm_response(request.app.state.llm, message)
+    return StreamingResponse(response_stream, media_type="text/plain")
+
+@router.post("/chat_bot")
+async def chat_bot(request: Request, message: str = Form(...), image: UploadFile = File(None)):
+    response_stream = stream_llm_response(request.app.state.chat_engine, message)
     return StreamingResponse(response_stream, media_type="text/plain")
