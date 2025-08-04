@@ -1,44 +1,88 @@
+# GenAI Deployment Project
+
 ## Overview
 
-In my previous Generative AI projects:
+This project builds upon my previous work in Generative AI, where I explored both **open-source** and **commercial** large language models (LLMs), including:
 
-* I explored both open-source large language models (LLMs) such as **Phi-4**, **Mistral**, and **Qwen-3**, as well as commercial solutions like those offered through **AWS Bedrock**.
-* The initial approach involved direct integration with LLMs using libraries like the `openai` SDK or tools like **Ollama** for running open-source models locally. This evolved into building structured APIs using **FastAPI**, and eventually, more sophisticated pipelines using frameworks like **LlamaIndex**.
-* Early testing was done through tools such as **Jupyter Notebooks** and **Postman**, which later progressed to developing simple front-end interfaces using **HTML**, **CSS**, and **JavaScript** for better user interaction.
-* I also integrated external services such as **MongoDB** and **ChromaDB**, which were hosted locally as backend components.
+- **Open-source LLMs** such as **Phi-4**, **Mistral**, and **Qwen-3**
+- **Commercial APIs** available through **AWS Bedrock**
 
-While earlier projects were run locally, the focus has now shifted toward deploying applications that are **publicly accessible** over the internet.
+### Evolution of the Approach
 
-One critical component of building production-ready applications is establishing a **CI/CD pipeline**. Continuous Integration and Continuous Deployment streamline the transition from development to production by automating key steps such as:
+1. **Direct Integration with LLMs**  
+   - Used the `openai` SDK and tools like **Ollama** for running models locally.  
+   - Transitioned to structured APIs using **FastAPI**, and later, advanced pipelines via **LlamaIndex**.
 
-* **Building and Packaging:** Application code is containerized into a **Docker image** and pushed to a remote container registry such as **Amazon ECR (Elastic Container Registry)**. This process is managed via **GitHub Actions** workflows.
-* **Deployment Automation:** Instead of manually provisioning infrastructure like **EC2 instances**, I now use **Terraform** to automate the creation and management of AWS resources, significantly reducing manual overhead and risk of misconfiguration.
+2. **Development & Testing Tools**  
+   - Started with **Jupyter Notebooks** and **Postman** for experimentation.  
+   - Progressed to building simple front-end interfaces using **HTML**, **CSS**, and **JavaScript**.
 
-## Components
+3. **Backend Services**  
+   - Integrated with services such as **MongoDB** and **ChromaDB**, hosted locally.
 
-### The Genai project
-- Implements simple chat engine by using `llama-index` framework
-- LLM is provided by AWS Bedrock, the project uses novalite model by AWS but it can be easily replaced with other models available on AWS 
-- FastAPI is used to build the back end endpoints, a simple Web UI has been created to interact with the application
-- Screenshot of application running on EC2 instances can be seen [here](/docs/ui%20screenshot.jpg) & [here](/docs/chat%20engine%20screenshot.jpg) 
+### Shift to Cloud Deployment
 
-### Terraform
-- Terraform can be used to automate the creation of EC2 instance for deployment
-- Instead of hard coding Infra config in the configuration, the code is designed to take configuration externally
-- The code can be found the [terraform](/terraform/) folder of code repository
+The focus has now moved to deploying **publicly accessible** applications. A major step toward this has been the integration of a **CI/CD pipeline**, which automates development-to-production workflows.
 
-### Infra config 
-- Infra details have been specified in the file `configs/infra_config.ini`
+#### Key CI/CD Components:
 
-### Github Action Workflows
-Following workflows have been created for automation
+- **Build & Packaging**  
+  - Application is containerized as a **Docker image** and pushed to **Amazon ECR** using **GitHub Actions**.
 
-**Docker image creation and push to ECR** 
-- After code has been commited we can use github to build the docker image and push to ECR repository
-- AWS credentials are provided as secrets
-- A separate python [script](/configs/load_config.py) has been created to read the ECR details from the [infra_config.ini](/configs/infra_config.ini) file and load it into the github actions environment
+- **Automated Deployment**  
+  - Infrastructure is provisioned via **Terraform**, replacing manual setup (e.g., EC2 instance creation).
 
-**ECR repository creation and EC2 instance creation**
-- Workflow created to run the Terraform script for creating ECR repository and EC2 instance based on the configuration provided in `infra_config.ini` file
-- Since Terraform scripts are run on Github on temporary runners, the terraform state is not saved. Thus we may try to create a resource that already exists. To avoid this we run a python script that check the current status of resources specified in the terraform config file. 
+---
 
+## Project Components
+
+### 1. GenAI Chat Engine
+
+- Implements a simple chat engine using the `llama-index` framework.
+- Uses the **NOVA Lite** model via **AWS Bedrock** (easily replaceable with other supported models).
+- Back-end built using **FastAPI**.
+- Simple front-end UI for chat interaction.
+- Screenshots of the UI given in the appendix
+
+---
+
+### 2. Terraform Infrastructure
+
+- Automates the provisioning of **EC2 instances** for deployment.
+- Infra configurations are externalized to avoid hardcoding.
+- Terraform code resides in the [`terraform`](/terraform/) directory.
+
+#### Infra Config
+
+- Infrastructure parameters are defined in [`configs/infra_config.ini`](configs/infra_config.ini)
+
+---
+
+### 3. GitHub Actions Workflows
+
+Automated workflows include:
+
+#### a. **Docker Image Build & Push to ECR**
+
+- Triggered on code commits.
+- Builds Docker image and pushes it to **Amazon ECR**.
+- AWS credentials are managed via GitHub Secrets.
+- A Python [script](/configs/load_config.py) loads ECR details from `infra_config.ini` into the GitHub Actions environment.
+
+#### b. **Terraform: ECR & EC2 Provisioning**
+
+- A separate workflow runs Terraform to:
+  - Create the ECR repository
+  - Launch EC2 instances based on `infra_config.ini`
+- Since GitHub runners are ephemeral, **Terraform state isn't persisted**, risking duplicate resource creation.
+- To mitigate this, a Python script checks the current AWS resource status before provisioning.
+
+---
+
+## APPENDIX
+
+Screenshots of Application deployed on EC2
+
+  ![UI Screenshot](/docs/ui%20screenshot.jpg)  
+
+  ![Chat Engine Screenshot](/docs/chat%20engine%20screenshot.jpg)
