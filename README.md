@@ -1,6 +1,7 @@
 # GenAI Deployment Project
 
 ## Overview
+In this project I have explored integrating CICD pipelines with genai application development.
 
 This project builds upon my previous work in Generative AI, where I explored both **open-source** and **commercial** large language models (LLMs), including:
 
